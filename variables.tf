@@ -21,3 +21,6 @@ variable "dns_zone_name" {
 variable "whitelist_cidr_blocks" {
   type = list(string)
 }
+
+variable "web_admin_user" {}
+variable "web_admin_password" {}

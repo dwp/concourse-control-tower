@@ -80,21 +80,23 @@ data "template_file" "concourse_systemd" {
   template = file("${path.module}/templates/web_systemd.tpl")
 
   vars = {
-    external-url      = "https://ci-dw-poc.co.uk"
-    admin-user        = ""
-    admin-password    = ""
-    database-user     = ""
-    database-password = ""
+    external_url      = "https://${var.dns_zone_name}"
+    admin_user        = var.web_admin_user
+    admin_password    = var.web_admin_password
+    database_user     = aws_rds_cluster.concourse.master_username
+    database_password = aws_rds_cluster.concourse.master_password
   }
 }
 
+data "aws_region" "current" {}
+
 data "template_file" "concourse_bootstrap" {
-  template = file("${path.module}/templates/bootstrap_concourse.sh.tpl")
+  template = file("${path.module}/templates/bootstrap_web.sh.tpl")
 
   vars = {
     concourse_version             = var.concourse_version
     keys_bucket_id                = module.keys.keys_bucket_id
-    cross_account_worker_role_arn = module.keys.concourse_keys_cross_account_role_arn
+    aws_default_region = data.aws_region.current.name
   }
 }
 
@@ -132,7 +134,7 @@ write_files:
 - encoding: b64
   content: ${base64encode(data.template_file.concourse_systemd.rendered)}
   owner: root:root
-  path: /etc/systemd/system/concourse_worker.service
+  path: /etc/systemd/system/concourse_web.service
   permissions: '0755'
 EOF
 
