@@ -7,7 +7,7 @@ curl -s -L -f -o ./concourse.tgz https://github.com/concourse/concourse/releases
 tar -xzf ./concourse.tgz -C /usr/local
 
 # Download concourse keys
-AWS_DEFAULT_REGION=${aws_default_region}
+export AWS_DEFAULT_REGION=${aws_default_region}
 
 mkdir /etc/concourse
 aws s3 cp s3://${keys_bucket_id}/session_signing_key /etc/concourse/session_signing_key

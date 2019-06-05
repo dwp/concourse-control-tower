@@ -62,13 +62,13 @@ resource "aws_iam_instance_profile" "concourse" {
 }
 
 resource "aws_instance" "web" {
-  count                = var.web_count
-  ami                  = data.aws_ami.ubuntu.id
-  instance_type        = "t2.micro"
-  subnet_id            = aws_subnet.private[count.index].id
-  iam_instance_profile = aws_iam_instance_profile.concourse.id
-  user_data            = data.template_cloudinit_config.concourse_bootstrap.rendered
-  security_groups      = [aws_security_group.web.id]
+  count                  = var.web_count
+  ami                    = data.aws_ami.ubuntu.id
+  instance_type          = "t2.micro"
+  subnet_id              = aws_subnet.private[count.index].id
+  iam_instance_profile   = aws_iam_instance_profile.concourse.id
+  user_data_base64       = data.template_cloudinit_config.concourse_bootstrap.rendered
+  vpc_security_group_ids = [aws_security_group.web.id]
   tags = merge(
     var.tags,
     { Name = "web-${local.zone_names[count.index]}" }
@@ -83,6 +83,8 @@ data "template_file" "concourse_systemd" {
     external_url      = "https://${var.dns_zone_name}"
     admin_user        = var.web_admin_user
     admin_password    = var.web_admin_password
+    database_host     = aws_rds_cluster.concourse.endpoint
+    database_name     = aws_rds_cluster.concourse.database_name
     database_user     = aws_rds_cluster.concourse.master_username
     database_password = aws_rds_cluster.concourse.master_password
   }
@@ -94,8 +96,8 @@ data "template_file" "concourse_bootstrap" {
   template = file("${path.module}/templates/bootstrap_web.sh.tpl")
 
   vars = {
-    concourse_version             = var.concourse_version
-    keys_bucket_id                = module.keys.keys_bucket_id
+    concourse_version  = var.concourse_version
+    keys_bucket_id     = module.keys.keys_bucket_id
     aws_default_region = data.aws_region.current.name
   }
 }
@@ -150,6 +152,10 @@ EOF
 
 resource "aws_security_group" "web" {
   vpc_id = aws_vpc.main.id
+  tags = merge(
+  var.tags,
+  { Name = "web" }
+  )
 }
 
 resource "aws_security_group_rule" "web_elb_in" {
@@ -167,5 +173,5 @@ resource "aws_security_group_rule" "web_all_out" {
   security_group_id = aws_security_group.web.id
   to_port           = 0
   type              = "egress"
-  cidr_blocks = ["0.0.0.0/0"]
+  cidr_blocks       = ["0.0.0.0/0"]
 }

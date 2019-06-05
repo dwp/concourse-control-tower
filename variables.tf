@@ -22,5 +22,10 @@ variable "whitelist_cidr_blocks" {
   type = list(string)
 }
 
+variable "database_user" {}
+variable "database_password" {}
+variable "database_instance_class" {}
+variable "database_count" {}
+
 variable "web_admin_user" {}
 variable "web_admin_password" {}
