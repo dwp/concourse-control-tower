@@ -10,6 +10,8 @@ ExecStart=/usr/local/concourse/bin/concourse web \
        --session-signing-key /etc/concourse/session_signing_key \
        --tsa-host-key /etc/concourse/host_key \
        --tsa-authorized-keys /etc/concourse/authorized_worker_keys \
+       --postgres-database ${database_name} \
+       --postgres-host ${database_host} \
        --postgres-user=${database_user} \
        --postgres-password=${database_password}
 
