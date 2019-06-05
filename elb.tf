@@ -2,6 +2,17 @@ data "aws_route53_zone" "concourse" {
   name = var.dns_zone_name
 }
 
+resource "aws_route53_record" "concourse" {
+  name = var.dns_zone_name
+  type = "A"
+  zone_id = data.aws_route53_zone.concourse.id
+  alias {
+    evaluate_target_health = false
+    name = aws_elb.concourse.dns_name
+    zone_id = aws_elb.concourse.zone_id
+  }
+}
+
 resource "aws_acm_certificate" "concourse" {
   domain_name       = data.aws_route53_zone.concourse.name
   validation_method = "DNS"
@@ -23,6 +34,8 @@ resource "aws_acm_certificate_validation" "cert" {
 resource "aws_elb" "concourse" {
   subnets         = aws_subnet.public.*.id
   security_groups = [aws_security_group.elb.id]
+  instances = aws_instance.web.*.id
+
   listener {
     instance_port      = 8080
     instance_protocol  = "HTTP"
@@ -30,12 +43,6 @@ resource "aws_elb" "concourse" {
     lb_protocol        = "HTTPS"
     ssl_certificate_id = aws_acm_certificate_validation.cert.certificate_arn
   }
-}
-
-resource "aws_elb_attachment" "concourse" {
-  count    = var.web_count
-  elb      = aws_elb.concourse.id
-  instance = aws_instance.web[count.index].id
 }
 
 resource "aws_security_group" "elb" {
