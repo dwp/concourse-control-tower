@@ -3,7 +3,8 @@ Description=Concourse CI Web
 
 [Service]
 ExecStart=/usr/local/concourse/bin/concourse web \
-       --peer-address=%H \
+       --peer-address %H \
+       --tsa-bind-ip 0.0.0.0 \
        --external-url ${external_url} \
        --add-local-user ${admin_user}:${admin_password} \
        --main-team-local-user ${admin_user} \
