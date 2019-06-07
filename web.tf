@@ -1,6 +1,6 @@
 resource "aws_instance" "web" {
   count                  = var.web.count
-  ami                    = data.aws_ami.ubuntu.id
+  ami                    = data.aws_ami.ami.id
   instance_type          = var.web.instance_type
   subnet_id              = aws_subnet.private[count.index].id
   iam_instance_profile   = aws_iam_instance_profile.concourse.id
@@ -16,7 +16,8 @@ data "template_file" "web_systemd" {
   template = file("${path.module}/templates/web_systemd.tpl")
 
   vars = {
-    external_url      = "https://${var.dns_zone_name}"
+    external_url      = "https://${local.fqdn}"
+    cluster_name = var.cluster_name
     admin_user        = var.web.admin_user
     admin_password    = var.web.admin_password
     database_host     = aws_rds_cluster.concourse.endpoint
