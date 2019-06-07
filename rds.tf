@@ -7,9 +7,9 @@ resource "aws_rds_cluster" "concourse" {
   engine                    = "aurora-postgresql"
   engine_version            = "10.7"
   availability_zones        = data.aws_availability_zones.main.names
-  database_name             = "concourse"
-  master_username           = var.database_user
-  master_password           = var.database_password
+  database_name             = var.database.name
+  master_username           = var.database.user
+  master_password           = var.database.password
   backup_retention_period   = 14
   preferred_backup_window   = "07:00-09:00"
   apply_immediately         = true
@@ -20,13 +20,13 @@ resource "aws_rds_cluster" "concourse" {
 }
 
 resource "aws_rds_cluster_instance" "concourse" {
-  count              = var.database_count
+  count              = var.database.count
   identifier_prefix  = "concourse-${local.zone_names[count.index]}-"
   engine             = aws_rds_cluster.concourse.engine
   engine_version     = aws_rds_cluster.concourse.engine_version
   availability_zone  = local.zone_names[count.index]
   cluster_identifier = aws_rds_cluster.concourse.id
-  instance_class     = var.database_instance_class
+  instance_class     = var.database.instance_type
   tags               = var.tags
 }
 

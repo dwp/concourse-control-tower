@@ -6,10 +6,6 @@ variable "tags" {
   type = map
 }
 
-variable "web_count" {
-  type = number
-}
-
 variable "concourse_version" {
   type = string
 }
@@ -22,10 +18,14 @@ variable "whitelist_cidr_blocks" {
   type = list(string)
 }
 
-variable "database_user" {}
-variable "database_password" {}
-variable "database_instance_class" {}
-variable "database_count" {}
+variable "database" {
+  type = map
+}
 
-variable "web_admin_user" {}
-variable "web_admin_password" {}
+variable "web" {
+  type = map
+}
+
+variable "worker" {
+  type = map
+}
