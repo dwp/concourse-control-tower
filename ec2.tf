@@ -1,11 +1,11 @@
 data "aws_region" "current" {}
 
-data "aws_ami" "ubuntu" {
+data "aws_ami" "ami" {
   most_recent = true
 
   filter {
     name   = "name"
-    values = ["ubuntu/images/hvm-ssd/ubuntu-xenial-16.04-amd64-server-*"]
+    values = ["amzn2-ami-hvm-2.0.*-x86_64-gp2"]
   }
 
   filter {
@@ -13,7 +13,7 @@ data "aws_ami" "ubuntu" {
     values = ["hvm"]
   }
 
-  owners = ["099720109477"] # Canonical
+  owners = ["137112412989"] # Amazon
 }
 
 # TODO: Fix ref to workers, pass in tags

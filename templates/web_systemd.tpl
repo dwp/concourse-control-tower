@@ -6,6 +6,7 @@ ExecStart=/usr/local/concourse/bin/concourse web \
        --peer-address %H \
        --tsa-bind-ip 0.0.0.0 \
        --external-url ${external_url} \
+       --cluster-name ${cluster_name} \
        --add-local-user ${admin_user}:${admin_password} \
        --main-team-local-user ${admin_user} \
        --session-signing-key /etc/concourse/session_signing_key \

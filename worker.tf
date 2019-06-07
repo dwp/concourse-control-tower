@@ -1,6 +1,6 @@
 resource "aws_instance" "worker" {
   count                  = var.worker.count
-  ami                    = data.aws_ami.ubuntu.id
+  ami                    = data.aws_ami.ami.id
   instance_type          = var.worker.instance_type
   subnet_id              = aws_subnet.private[count.index].id
   iam_instance_profile   = aws_iam_instance_profile.concourse.id
@@ -16,7 +16,7 @@ data "template_file" "worker_systemd" {
   template = file("${path.module}/templates/worker_systemd.tpl")
 
   vars = {
-    tsa_host = "${var.dns_zone_name}:2222"
+    tsa_host = "${local.fqdn}:2222"
     tags     = ""
   }
 }
