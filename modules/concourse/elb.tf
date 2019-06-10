@@ -49,13 +49,22 @@ resource "aws_security_group_rule" "elb_http_in" {
   cidr_blocks       = var.whitelist_cidr_blocks
 }
 
-resource "aws_security_group_rule" "elb_ssh_in" {
+resource "aws_security_group_rule" "elb_external_ssh_in" {
   from_port         = 2222
   protocol          = "tcp"
   security_group_id = aws_security_group.elb.id
   to_port           = 2222
   type              = "ingress"
   cidr_blocks       = var.whitelist_cidr_blocks
+}
+
+resource "aws_security_group_rule" "elb_worker_ssh_in" {
+  from_port         = 2222
+  protocol          = "tcp"
+  security_group_id = aws_security_group.elb.id
+  to_port           = 2222
+  type              = "ingress"
+  source_security_group_id = aws_security_group.worker.id
 }
 
 resource "aws_security_group_rule" "elb_web_http_out" {
