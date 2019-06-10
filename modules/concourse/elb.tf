@@ -1,5 +1,5 @@
 resource "aws_elb" "concourse" {
-  subnets         = aws_subnet.public.*.id
+  subnets         = var.vpc.aws_subnets_public[*].id
   security_groups = [aws_security_group.elb.id]
   instances       = aws_instance.web.*.id
 
@@ -33,7 +33,7 @@ resource "aws_elb" "concourse" {
 }
 
 resource "aws_security_group" "elb" {
-  vpc_id = aws_vpc.main.id
+  vpc_id = var.vpc.aws_vpc.id
   tags = merge(
     var.tags,
     { Name = "elb" }

@@ -1,10 +1,24 @@
-variable "cidr_block" {
-  description = "cidr block to use for vpc"
-  type        = string
+variable "vpc" {
+  description = "vpc configurables"
+  type = object({
+    aws_availability_zones = any
+    aws_subnets_private = list(any)
+    aws_subnets_public = list(any)
+    aws_vpc = any
+  })
 }
+
+variable "key_bucket_name" {
+  description = "bucket name for storing keys"
+  type = string
+}
+locals {
+  zone_names = var.vpc.aws_availability_zones.names
+}
+
 variable "tags" {
   description = "tags to apply to aws resource"
-  type        = map(string)
+  type = map(string)
 }
 
 variable "cluster_name" {
@@ -26,13 +40,13 @@ variable "parent_domain_name" {
 
 variable "whitelist_cidr_blocks" {
   description = "list of allowed cidr blocks"
-  type        = list(string)
+  type = list(string)
 }
 
 variable "database" {
   description = "database configuration options"
   type = object({
-    name          = string
+    name = string
     user          = string
     password      = string
     instance_type = string
