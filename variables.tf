@@ -7,19 +7,19 @@ variable "tags" {
 }
 
 variable "cluster_name" {
-  type = string
-  default = "concourse"
+  type        = string
+  default     = "concourse"
   description = "cluster name, used in dns"
 }
 
 variable "concourse_version" {
-  type = string
-  default = "5.2.0"
+  type        = string
+  default     = "5.2.0"
   description = "concourse version to install"
 }
 
 variable "parent_domain_name" {
-  type = string
+  type        = string
   description = "parent domain name for CI"
 }
 
