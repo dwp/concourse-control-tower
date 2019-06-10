@@ -2,7 +2,7 @@ resource "aws_instance" "web" {
   count                  = var.web.count
   ami                    = data.aws_ami.ami.id
   instance_type          = var.web.instance_type
-  subnet_id              = aws_subnet.private[count.index].id
+  subnet_id              = var.vpc.aws_subnets_private[count.index].id
   iam_instance_profile   = aws_iam_instance_profile.concourse.id
   user_data_base64       = data.template_cloudinit_config.web_bootstrap.rendered
   vpc_security_group_ids = [aws_security_group.web.id]
@@ -29,7 +29,7 @@ locals {
     "${path.module}/templates/web_bootstrap.sh.tpl",
     {
       concourse_version  = var.concourse_version
-      keys_bucket_id     = module.keys.keys_bucket_id
+      keys_bucket_id     = aws_s3_bucket.concourse_keys.id
       aws_default_region = data.aws_region.current.name
     }
   )
@@ -51,19 +51,16 @@ data "template_cloudinit_config" "web_bootstrap" {
 
   part {
     content_type = "text/cloud-config"
-
     content = <<EOF
 packages:
   - awscli
   - jq
 EOF
-
   }
 
   # Create concourse_worker systemd service file
   part {
     content_type = "text/cloud-config"
-
     content = <<EOF
 write_files:
 - encoding: b64
@@ -71,21 +68,6 @@ write_files:
   owner: root:root
   path: /etc/systemd/system/concourse_web.service
   permissions: '0755'
-EOF
-
-  }
-
-  # Bootstrap concourse
-  part {
-    content_type = "text/x-shellscript"
-    content      = local.web_bootstrap_file
-  }
-
-  # Install logger
-  part {
-    content_type = "text/cloud-config"
-    content      = <<EOF
-write_files:
 - encoding: b64
   content: ${base64encode(local.logger_conf_file)}
   owner: root:root
@@ -98,6 +80,14 @@ write_files:
   permissions: '0755'
 EOF
   }
+
+  # Bootstrap concourse
+  part {
+    content_type = "text/x-shellscript"
+    content      = local.web_bootstrap_file
+  }
+
+  # Bootstrap logger
   part {
     content_type = "text/x-shellscript"
     content = local.logger_bootstrap_file
@@ -105,7 +95,7 @@ EOF
 }
 
 resource "aws_security_group" "web" {
-  vpc_id = aws_vpc.main.id
+  vpc_id = var.vpc.aws_vpc.id
   tags = merge(
   var.tags,
   { Name = "web" }

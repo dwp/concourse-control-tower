@@ -1,12 +1,12 @@
 resource "aws_db_subnet_group" "concourse" {
-  subnet_ids = aws_subnet.private.*.id
+  subnet_ids = var.vpc.aws_subnets_private[*].id
 }
 
 resource "aws_rds_cluster" "concourse" {
   cluster_identifier_prefix = "concourse-"
   engine                    = "aurora-postgresql"
   engine_version            = "10.7"
-  availability_zones        = data.aws_availability_zones.main.names
+  availability_zones        = local.zone_names
   database_name             = var.database.name
   master_username           = var.database.user
   master_password           = var.database.password
@@ -31,7 +31,7 @@ resource "aws_rds_cluster_instance" "concourse" {
 }
 
 resource "aws_security_group" "db" {
-  vpc_id = aws_vpc.main.id
+  vpc_id = var.vpc.aws_vpc.id
   tags = merge(
     var.tags,
     { Name = "db" }

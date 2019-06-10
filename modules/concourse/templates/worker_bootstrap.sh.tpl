@@ -10,8 +10,8 @@ tar -xzf ./concourse.tgz -C /usr/local
 export AWS_DEFAULT_REGION=${aws_default_region}
 
 mkdir /etc/concourse
-aws s3 cp s3://concourse-keys-concourse-development/tsa_host_key.pub /etc/concourse/
-aws s3 cp s3://concourse-keys-concourse-development/worker_key /etc/concourse/
+aws s3 cp s3://${keys_bucket_id}/tsa_host_key.pub /etc/concourse/
+aws s3 cp s3://${keys_bucket_id}/worker_key /etc/concourse/
 
 # Enable & start concourse_web service
 systemctl enable concourse_worker.service

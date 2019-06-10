@@ -26,14 +26,6 @@ data "aws_ami" "ami" {
   owners = ["137112412989"] # Amazon
 }
 
-# TODO: Fix ref to workers, pass in tags
-module "keys" {
-  source = "./modules/keys"
-  concourse_workers_iam_role_arns = [aws_iam_role.concourse.arn]
-  environment = lookup(var.tags, "Environment")
-  name = lookup(var.tags, "Name")
-}
-
 resource "aws_iam_role" "concourse" {
   name = "concourse"
   assume_role_policy = data.aws_iam_policy_document.concourse.json
@@ -70,8 +62,8 @@ data "aws_iam_policy_document" "concourse_policy" {
     ]
 
     resources = [
-      module.keys.keys_bucket_arn,
-      "${module.keys.keys_bucket_arn}/*",
+      aws_s3_bucket.concourse_keys.arn,
+      "${aws_s3_bucket.concourse_keys.arn}/*",
     ]
   }
 }
