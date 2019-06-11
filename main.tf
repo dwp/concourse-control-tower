@@ -3,8 +3,12 @@ provider "aws" {
 }
 
 module "concourse" {
-  source                = "./modules/concourse"
-  database              = var.database
+  source   = "./modules/concourse"
+  database = var.database
+  secrets = {
+    database = module.database_secrets
+    admin    = module.admin_secrets
+  }
   parent_domain_name    = var.parent_domain_name
   tags                  = var.tags
   vpc                   = module.management
@@ -14,7 +18,6 @@ module "concourse" {
   key_bucket_name       = random_id.key_bucket.hex
 }
 
-
 module "management" {
   source     = "./modules/vpc"
   cidr_block = var.cidr_block
@@ -23,4 +26,14 @@ module "management" {
 
 resource "random_id" "key_bucket" {
   byte_length = 16
+}
+
+module "database_secrets" {
+  source          = "./modules/secrets"
+  ssm_name_prefix = "${var.ssm_name_prefix}/database"
+}
+
+module "admin_secrets" {
+  source          = "./modules/secrets"
+  ssm_name_prefix = "${var.ssm_name_prefix}/admin"
 }

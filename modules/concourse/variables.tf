@@ -43,12 +43,24 @@ variable "whitelist_cidr_blocks" {
   type = list(string)
 }
 
+variable "secrets" {
+  description = "ssm secret names"
+  type = object({
+    database = object({
+      user_ssm_name = string
+      password_ssm_name = string
+    })
+    admin = object({
+      user_ssm_name = string
+      password_ssm_name = string
+    })
+  })
+}
+
 variable "database" {
   description = "database configuration options"
   type = object({
     name = string
-    user          = string
-    password      = string
     instance_type = string
     count         = number
   })
@@ -57,8 +69,6 @@ variable "database" {
 variable "web" {
   description = "atc/tsa configuration options"
   type = object({
-    admin_user     = string
-    admin_password = string
     count          = number
     instance_type  = string
   })

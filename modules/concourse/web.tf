@@ -1,3 +1,11 @@
+data "aws_ssm_parameter" "admin_password" {
+  name = var.secrets.admin.password_ssm_name
+}
+
+data "aws_ssm_parameter" "admin_user" {
+  name = var.secrets.admin.user_ssm_name
+}
+
 resource "aws_instance" "web" {
   count                  = var.web.count
   ami                    = data.aws_ami.ami.id
@@ -11,14 +19,15 @@ resource "aws_instance" "web" {
     { Name = "web-${local.zone_names[count.index]}" }
   )
 }
+
 locals {
   web_systemd_file = templatefile(
     "${path.module}/templates/web_systemd.tpl",
     {
       external_url      = "https://${local.fqdn}"
       cluster_name      = var.cluster_name
-      admin_user        = var.web.admin_user
-      admin_password    = var.web.admin_password
+      admin_user        = data.aws_ssm_parameter.admin_user.value
+      admin_password    = data.aws_ssm_parameter.admin_password.value
       database_host     = aws_rds_cluster.concourse.endpoint
       database_name     = aws_rds_cluster.concourse.database_name
       database_user     = aws_rds_cluster.concourse.master_username
