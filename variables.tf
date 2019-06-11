@@ -1,3 +1,9 @@
+variable "ssm_name_prefix" {
+  description = "name prefix for ssm parameters"
+  type        = string
+  default     = "/concourse"
+}
+
 variable "cidr_block" {
   description = "cidr block to use for vpc"
   type        = string
@@ -33,8 +39,6 @@ variable "database" {
   description = "database configuration options"
   type = object({
     name          = string
-    user          = string
-    password      = string
     instance_type = string
     count         = number
   })
@@ -43,10 +47,8 @@ variable "database" {
 variable "web" {
   description = "atc/tsa configuration options"
   type = object({
-    admin_user     = string
-    admin_password = string
-    count          = number
-    instance_type  = string
+    count         = number
+    instance_type = string
   })
 }
 
