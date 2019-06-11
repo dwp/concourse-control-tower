@@ -36,4 +36,5 @@ module "database_secrets" {
 module "admin_secrets" {
   source          = "./modules/secrets"
   ssm_name_prefix = "${var.ssm_name_prefix}/admin"
+  user = "concourse"
 }
