@@ -26,7 +26,7 @@ locals {
     {
       environment_vars = {
         CONCOURSE_PEER_ADDRESS = "%H"
-        CONCOURSE_TSA_SESSION_SIGNING_KEY = "/etc/concourse/session_signing_key"
+        CONCOURSE_SESSION_SIGNING_KEY = "/etc/concourse/session_signing_key"
         CONCOURSE_TSA_HOST_KEY = "/etc/concourse/host_key"
         CONCOURSE_TSA_AUTHORIZED_KEYS = "/etc/concourse/authorized_worker_keys"
         CONCOURSE_EXTERNAL_URL = "https://${local.fqdn}"
