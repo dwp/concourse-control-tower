@@ -24,14 +24,20 @@ locals {
   web_systemd_file = templatefile(
     "${path.module}/templates/web_systemd.tpl",
     {
-      external_url      = "https://${local.fqdn}"
-      cluster_name      = var.cluster_name
-      admin_user        = data.aws_ssm_parameter.admin_user.value
-      admin_password    = data.aws_ssm_parameter.admin_password.value
-      database_host     = aws_rds_cluster.concourse.endpoint
-      database_name     = aws_rds_cluster.concourse.database_name
-      database_user     = aws_rds_cluster.concourse.master_username
-      database_password = aws_rds_cluster.concourse.master_password
+      environment_vars = {
+        CONCOURSE_PEER_ADDRESS = "%H"
+        CONCOURSE_TSA_SESSION_SIGNING_KEY = "/etc/concourse/session_signing_key"
+        CONCOURSE_TSA_HOST_KEY = "/etc/concourse/host_key"
+        CONCOURSE_TSA_AUTHORIZED_KEYS = "/etc/concourse/authorized_worker_keys"
+        CONCOURSE_EXTERNAL_URL = "https://${local.fqdn}"
+        CONCOURSE_CLUSTER_NAME = var.cluster_name
+        CONCOURSE_POSTGRES_HOST = aws_rds_cluster.concourse.endpoint
+        CONCOURSE_POSTGRES_USER = aws_rds_cluster.concourse.master_username
+        CONCOURSE_POSTGRES_PASSWORD = aws_rds_cluster.concourse.master_password
+        CONCOURSE_POSTGRES_DATABASE = aws_rds_cluster.concourse.database_name
+        CONCOURSE_ADD_LOCAL_USER        = "${data.aws_ssm_parameter.admin_user.value}:${data.aws_ssm_parameter.admin_password.value}"
+        CONCOURSE_MAIN_TEAM_LOCAL_USER = data.aws_ssm_parameter.admin_user.value
+      }
     }
   )
   web_bootstrap_file = templatefile(
