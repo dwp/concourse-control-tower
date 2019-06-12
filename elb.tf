@@ -13,9 +13,9 @@ resource "aws_elb" "concourse" {
 
   listener {
     instance_port      = 8080
-    instance_protocol  = "HTTP"
+    instance_protocol  = "TCP"
     lb_port            = 443
-    lb_protocol        = "HTTPS"
+    lb_protocol        = "SSL"
     ssl_certificate_id = aws_acm_certificate_validation.cert.certificate_arn
   }
 
@@ -56,15 +56,6 @@ resource "aws_security_group_rule" "elb_external_ssh_in" {
   to_port           = 2222
   type              = "ingress"
   cidr_blocks       = var.whitelist_cidr_blocks
-}
-
-resource "aws_security_group_rule" "elb_worker_ssh_in" {
-  from_port         = 2222
-  protocol          = "tcp"
-  security_group_id = aws_security_group.elb.id
-  to_port           = 2222
-  type              = "ingress"
-  source_security_group_id = aws_security_group.worker.id
 }
 
 resource "aws_security_group_rule" "elb_web_http_out" {
