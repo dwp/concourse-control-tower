@@ -24,7 +24,8 @@ locals {
   web_systemd_file = templatefile(
     "${path.module}/templates/web_systemd.tpl",
     {
-      environment_vars = {
+      environment_vars = merge(
+      {
         CONCOURSE_PEER_ADDRESS = "%H"
         CONCOURSE_SESSION_SIGNING_KEY = "/etc/concourse/session_signing_key"
         CONCOURSE_TSA_HOST_KEY = "/etc/concourse/host_key"
@@ -37,7 +38,9 @@ locals {
         CONCOURSE_POSTGRES_DATABASE = aws_rds_cluster.concourse.database_name
         CONCOURSE_ADD_LOCAL_USER        = "${data.aws_ssm_parameter.admin_user.value}:${data.aws_ssm_parameter.admin_password.value}"
         CONCOURSE_MAIN_TEAM_LOCAL_USER = data.aws_ssm_parameter.admin_user.value
-      }
+      },
+      var.web.environment_override
+      )
     }
   )
   web_bootstrap_file = templatefile(

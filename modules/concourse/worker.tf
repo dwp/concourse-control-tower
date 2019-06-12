@@ -16,8 +16,16 @@ locals {
   worker_systemd_file = templatefile(
     "${path.module}/templates/worker_systemd.tpl",
     {
-      tsa_host = "${local.fqdn}:2222"
-      tags     = ""
+      environment_vars = merge(
+      {
+        CONCOURSE_TSA_HOST = "${local.fqdn}:2222"
+        CONCOURSE_TSA_PUBLIC_KEY = "/etc/concourse/tsa_host_key.pub"
+        CONCOURSE_TSA_WORKER_PRIVATE_KEY = "/etc/concourse/worker_key"
+        CONCOURSE_EPHEMERAL = true
+        CONCOURSE_WORK_DIR = "/opt/concourse"
+      },
+      var.worker.environment_override
+      )
     }
   )
   worker_bootstrap_file = templatefile(

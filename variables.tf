@@ -34,28 +34,3 @@ variable "whitelist_cidr_blocks" {
   description = "list of allowed cidr blocks"
   type        = list(string)
 }
-
-variable "database" {
-  description = "database configuration options"
-  type = object({
-    name          = string
-    instance_type = string
-    count         = number
-  })
-}
-
-variable "web" {
-  description = "atc/tsa configuration options"
-  type = object({
-    count         = number
-    instance_type = string
-  })
-}
-
-variable "worker" {
-  description = "worker configuration options"
-  type = object({
-    instance_type = string
-    count         = number
-  })
-}

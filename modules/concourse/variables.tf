@@ -64,6 +64,11 @@ variable "database" {
     instance_type = string
     count         = number
   })
+  default = {
+    name          = "concourse"
+    instance_type = "db.r5.large"
+    count         = 2
+  }
 }
 
 variable "web" {
@@ -71,7 +76,13 @@ variable "web" {
   type = object({
     count          = number
     instance_type  = string
+    environment_override = map(string)
   })
+  default = {
+    instance_type = "t3.micro"
+    count         = 2
+    environment_override = {}
+  }
 }
 
 variable "worker" {
@@ -79,5 +90,11 @@ variable "worker" {
   type = object({
     instance_type = string
     count         = number
+    environment_override = map(string)
   })
+  default = {
+    instance_type = "t3.micro"
+    count         = 2
+    environment_override = {}
+  }
 }
