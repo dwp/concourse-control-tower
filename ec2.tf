@@ -62,8 +62,8 @@ data "aws_iam_policy_document" "concourse_policy" {
     ]
 
     resources = [
-      aws_s3_bucket.concourse_keys.arn,
-      "${aws_s3_bucket.concourse_keys.arn}/*",
+      data.aws_s3_bucket.concourse_keys.arn,
+      "${data.aws_s3_bucket.concourse_keys.arn}/*",
     ]
   }
 }

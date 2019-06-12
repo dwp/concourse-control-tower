@@ -8,5 +8,4 @@ resource "aws_vpc_endpoint" "s3" {
     aws_route_table.private[*].id,
     aws_default_route_table.public[*].id
   )
-  tags  = var.tags
 }

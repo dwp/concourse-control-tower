@@ -3,13 +3,13 @@ provider "aws" {
 }
 
 variable "parent_domain_name" {}
-variable "tags"{}
+variable "tags" {}
 variable "whitelist_cidr_blocks" {}
 variable "cidr_block" {}
 variable "ssm_name_prefix" {}
 
 module "concourse" {
-  source   = "../"
+  source = "../"
   secrets = {
     database = module.database_secrets
     admin    = module.admin_secrets
@@ -29,6 +29,12 @@ module "management" {
 
 resource "random_id" "key_bucket" {
   byte_length = 16
+}
+
+module "keys" {
+  source = "./modules/keys"
+  name   = random_id.key_bucket.hex
+  tags = var.tags
 }
 
 module "database_secrets" {
