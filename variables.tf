@@ -9,9 +9,10 @@ variable "vpc" {
 }
 
 variable "key_bucket_name" {
-  description = "bucket name for storing keys"
+  description = "bucket name where concourse keys are stored"
   type = string
 }
+
 locals {
   zone_names = var.vpc.aws_availability_zones.names
 }

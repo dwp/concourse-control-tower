@@ -32,7 +32,7 @@ locals {
     "${path.module}/templates/worker_bootstrap.sh.tpl",
     {
       concourse_version  = var.concourse_version
-      keys_bucket_id     = aws_s3_bucket.concourse_keys.id
+      keys_bucket_id     = data.aws_s3_bucket.concourse_keys.id
       aws_default_region = data.aws_region.current.name
     }
   )
