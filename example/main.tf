@@ -2,8 +2,14 @@ provider "aws" {
   region = "eu-west-3"
 }
 
+variable "parent_domain_name" {}
+variable "tags"{}
+variable "whitelist_cidr_blocks" {}
+variable "cidr_block" {}
+variable "ssm_name_prefix" {}
+
 module "concourse" {
-  source   = "./modules/concourse"
+  source   = "../"
   secrets = {
     database = module.database_secrets
     admin    = module.admin_secrets
