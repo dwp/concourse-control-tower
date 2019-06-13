@@ -118,6 +118,9 @@ resource "aws_security_group" "web" {
   var.tags,
   { Name = "web" }
   )
+  lifecycle {
+    create_before_destroy = true
+  }
 }
 
 resource "aws_security_group_rule" "web_elb_in" {
