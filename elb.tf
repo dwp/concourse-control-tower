@@ -38,9 +38,12 @@ resource "aws_security_group" "elb" {
     var.tags,
     { Name = "elb" }
   )
+  lifecycle {
+    create_before_destroy = true
+  }
 }
 
-resource "aws_security_group_rule" "elb_http_in" {
+resource "aws_security_group_rule" "elb_external_https_in" {
   from_port         = 443
   protocol          = "tcp"
   security_group_id = aws_security_group.elb.id
@@ -56,6 +59,24 @@ resource "aws_security_group_rule" "elb_external_ssh_in" {
   to_port           = 2222
   type              = "ingress"
   cidr_blocks       = var.whitelist_cidr_blocks
+}
+
+resource "aws_security_group_rule" "elb_internal_https_in" {
+  from_port         = 443
+  protocol          = "tcp"
+  security_group_id = aws_security_group.elb.id
+  to_port           = 443
+  type              = "ingress"
+  cidr_blocks       = formatlist("%s/32", var.vpc.aws_nat_gateway[*].public_ip)
+}
+
+resource "aws_security_group_rule" "elb_internal_ssh_in" {
+  from_port         = 2222
+  protocol          = "tcp"
+  security_group_id = aws_security_group.elb.id
+  to_port           = 2222
+  type              = "ingress"
+  cidr_blocks       = formatlist("%s/32", var.vpc.aws_nat_gateway[*].public_ip)
 }
 
 resource "aws_security_group_rule" "elb_web_http_out" {

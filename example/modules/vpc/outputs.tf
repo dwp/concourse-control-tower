@@ -13,3 +13,7 @@ output "aws_subnets_private" {
 output "aws_availability_zones" {
   value = data.aws_availability_zones.main
 }
+
+output "aws_nat_gateway" {
+  value = aws_nat_gateway.nat
+}

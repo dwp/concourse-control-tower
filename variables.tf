@@ -5,6 +5,7 @@ variable "vpc" {
     aws_subnets_private = list(any)
     aws_subnets_public = list(any)
     aws_vpc = any
+    aws_nat_gateway = list(any)
   })
 }
 
