@@ -1,20 +1,28 @@
-concourse
+# Concourse Terraform Module
+Installs and configures Concourse CI in AWS  
+Considerations:
+- Uses EC2 classic loadbalancer to provide ATC(HTTPS) and TSA(TCP) services on the same domain
+- Expects various TLS key pairs in an S3 bucket, see ``example/modules/keys``
+- Written for Terraform 12, makes good use of complex types
 
-## Structure
-root: harness for testing & development
-- concourse: installs and runs concourse
+## Example
+example/main.tf: demonstrates how to use this module, useful for testing & development
+requires the following variables to be set:
+
+```ini
+# terraform.tfvars
+cidr_block = "10.0.0.0/16"
+tags = {
+  Name        = "concourse"
+  Environment = "development"
+  Project     = "ci"
+}
+parent_domain_name    = "example.com"
+whitelist_cidr_blocks = ["0.0.0.0/0"]
+ssm_name_prefix       = "/concourse"
+```
+
+example directory also contains the following modules:
+- keys: generates and stores concourse keys in S3
 - vpc: placeholder vpc module
-- secrets: adhoc secret generation
-
-## Usage
-```bash
-# stub modules are provided to create secrets
-# you may need to apply these prior to a standard terraform apply
-terraform apply -target module.database_secrets -target module.database_secrets
-```
-You can remove these and provide the various ssm_paths directly to the concourse module
-
-```bash
-# standup concourse with your default region & credentials
-terraform apply
-```
+- secrets: generates and stores username/passwords in SSM
