@@ -17,14 +17,14 @@ locals {
     "${path.module}/templates/worker_systemd.tpl",
     {
       environment_vars = merge(
-      {
-        CONCOURSE_TSA_HOST = "${local.fqdn}:2222"
-        CONCOURSE_TSA_PUBLIC_KEY = "/etc/concourse/tsa_host_key.pub"
-        CONCOURSE_TSA_WORKER_PRIVATE_KEY = "/etc/concourse/worker_key"
-        CONCOURSE_EPHEMERAL = true
-        CONCOURSE_WORK_DIR = "/opt/concourse"
-      },
-      var.worker.environment_override
+        {
+          CONCOURSE_TSA_HOST               = "${local.fqdn}:2222"
+          CONCOURSE_TSA_PUBLIC_KEY         = "/etc/concourse/tsa_host_key.pub"
+          CONCOURSE_TSA_WORKER_PRIVATE_KEY = "/etc/concourse/worker_key"
+          CONCOURSE_EPHEMERAL              = true
+          CONCOURSE_WORK_DIR               = "/opt/concourse"
+        },
+        var.worker.environment_override
       )
     }
   )
@@ -94,15 +94,15 @@ EOF
   # Bootstrap logger
   part {
     content_type = "text/x-shellscript"
-    content = local.logger_bootstrap_file
+    content      = local.logger_bootstrap_file
   }
 }
 
 resource "aws_security_group" "worker" {
   vpc_id = var.vpc.aws_vpc.id
   tags = merge(
-  var.tags,
-  { Name = "worker" }
+    var.tags,
+    { Name = "worker" }
   )
   lifecycle {
     create_before_destroy = true
@@ -110,10 +110,10 @@ resource "aws_security_group" "worker" {
 }
 
 resource "aws_security_group_rule" "worker_all_out" {
-  from_port = 0
-  protocol = "all"
+  from_port         = 0
+  protocol          = "all"
   security_group_id = aws_security_group.worker.id
-  to_port = 0
-  type = "egress"
-  cidr_blocks = ["0.0.0.0/0"]
+  to_port           = 0
+  type              = "egress"
+  cidr_blocks       = ["0.0.0.0/0"]
 }

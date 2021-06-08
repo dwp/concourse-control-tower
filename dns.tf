@@ -22,10 +22,10 @@ resource "aws_acm_certificate" "concourse" {
 }
 
 resource "aws_route53_record" "concourse_validation" {
-  name    = "${aws_acm_certificate.concourse.domain_validation_options.0.resource_record_name}"
-  type    = "${aws_acm_certificate.concourse.domain_validation_options.0.resource_record_type}"
+  name    = aws_acm_certificate.concourse.domain_validation_options.0.resource_record_name
+  type    = aws_acm_certificate.concourse.domain_validation_options.0.resource_record_type
   zone_id = data.aws_route53_zone.main.id
-  records = ["${aws_acm_certificate.concourse.domain_validation_options.0.resource_record_value}"]
+  records = [aws_acm_certificate.concourse.domain_validation_options.0.resource_record_value]
   ttl     = 60
 }
 

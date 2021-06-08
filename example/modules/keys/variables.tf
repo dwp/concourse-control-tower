@@ -19,5 +19,5 @@ variable "bucket_force_destroy" {
 
 variable "tags" {
   description = "aws resource tags"
-  default = {}
+  default     = {}
 }

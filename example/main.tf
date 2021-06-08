@@ -34,7 +34,7 @@ resource "random_id" "key_bucket" {
 module "keys" {
   source = "./modules/keys"
   name   = random_id.key_bucket.hex
-  tags = var.tags
+  tags   = var.tags
 }
 
 module "database_secrets" {
