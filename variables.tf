@@ -2,16 +2,16 @@ variable "vpc" {
   description = "vpc configurables"
   type = object({
     aws_availability_zones = any
-    aws_subnets_private = list(any)
-    aws_subnets_public = list(any)
-    aws_vpc = any
-    aws_nat_gateway = list(any)
+    aws_subnets_private    = list(any)
+    aws_subnets_public     = list(any)
+    aws_vpc                = any
+    aws_nat_gateway        = list(any)
   })
 }
 
 variable "key_bucket_name" {
   description = "bucket name where concourse keys are stored"
-  type = string
+  type        = string
 }
 
 locals {
@@ -20,7 +20,7 @@ locals {
 
 variable "tags" {
   description = "tags to apply to aws resource"
-  type = map(string)
+  type        = map(string)
 }
 
 variable "cluster_name" {
@@ -42,18 +42,18 @@ variable "parent_domain_name" {
 
 variable "whitelist_cidr_blocks" {
   description = "list of allowed cidr blocks"
-  type = list(string)
+  type        = list(string)
 }
 
 variable "secrets" {
   description = "ssm secret names"
   type = object({
     database = object({
-      user_ssm_name = string
+      user_ssm_name     = string
       password_ssm_name = string
     })
     admin = object({
-      user_ssm_name = string
+      user_ssm_name     = string
       password_ssm_name = string
     })
   })
@@ -62,7 +62,7 @@ variable "secrets" {
 variable "database" {
   description = "database configuration options"
   type = object({
-    name = string
+    name          = string
     instance_type = string
     count         = number
   })
@@ -76,13 +76,13 @@ variable "database" {
 variable "web" {
   description = "atc/tsa configuration options"
   type = object({
-    count          = number
-    instance_type  = string
+    count                = number
+    instance_type        = string
     environment_override = map(string)
   })
   default = {
-    instance_type = "t3.micro"
-    count         = 2
+    instance_type        = "t3.micro"
+    count                = 2
     environment_override = {}
   }
 }
@@ -90,13 +90,13 @@ variable "web" {
 variable "worker" {
   description = "worker configuration options"
   type = object({
-    instance_type = string
-    count         = number
+    instance_type        = string
+    count                = number
     environment_override = map(string)
   })
   default = {
-    instance_type = "t3.micro"
-    count         = 2
+    instance_type        = "t3.micro"
+    count                = 2
     environment_override = {}
   }
 }

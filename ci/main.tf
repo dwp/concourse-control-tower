@@ -2,7 +2,7 @@ variable "github_pat" {}
 
 provider "github" {
   organization = "dwp"
-  token        = "${var.github_pat}"
+  token        = var.github_pat
 }
 
 data "github_team" "dataworks" {
@@ -19,14 +19,14 @@ resource "github_repository" "concourse-control-tower" {
 }
 
 resource "github_team_repository" "concourse-control-tower-dataworks" {
-  repository = "${github_repository.concourse-control-tower.name}"
-  team_id    = "${data.github_team.dataworks.id}"
+  repository = github_repository.concourse-control-tower.name
+  team_id    = data.github_team.dataworks.id
   permission = "admin"
 }
 
 resource "github_branch_protection" "master" {
-  branch         = "${github_repository.concourse-control-tower.default_branch}"
-  repository     = "${github_repository.concourse-control-tower.name}"
+  branch         = github_repository.concourse-control-tower.default_branch
+  repository     = github_repository.concourse-control-tower.name
   enforce_admins = true
 
   required_status_checks {
@@ -42,5 +42,5 @@ resource "github_branch_protection" "master" {
 resource "github_issue_label" "wip" {
   color      = "f4b342"
   name       = "WIP"
-  repository = "${github_repository.concourse-control-tower.name}"
+  repository = github_repository.concourse-control-tower.name
 }

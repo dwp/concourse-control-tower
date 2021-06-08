@@ -25,21 +25,21 @@ locals {
     "${path.module}/templates/web_systemd.tpl",
     {
       environment_vars = merge(
-      {
-        CONCOURSE_PEER_ADDRESS = "%H"
-        CONCOURSE_SESSION_SIGNING_KEY = "/etc/concourse/session_signing_key"
-        CONCOURSE_TSA_HOST_KEY = "/etc/concourse/host_key"
-        CONCOURSE_TSA_AUTHORIZED_KEYS = "/etc/concourse/authorized_worker_keys"
-        CONCOURSE_EXTERNAL_URL = "https://${local.fqdn}"
-        CONCOURSE_CLUSTER_NAME = var.cluster_name
-        CONCOURSE_POSTGRES_HOST = aws_rds_cluster.concourse.endpoint
-        CONCOURSE_POSTGRES_USER = aws_rds_cluster.concourse.master_username
-        CONCOURSE_POSTGRES_PASSWORD = aws_rds_cluster.concourse.master_password
-        CONCOURSE_POSTGRES_DATABASE = aws_rds_cluster.concourse.database_name
-        CONCOURSE_ADD_LOCAL_USER        = "${data.aws_ssm_parameter.admin_user.value}:${data.aws_ssm_parameter.admin_password.value}"
-        CONCOURSE_MAIN_TEAM_LOCAL_USER = data.aws_ssm_parameter.admin_user.value
-      },
-      var.web.environment_override
+        {
+          CONCOURSE_PEER_ADDRESS         = "%H"
+          CONCOURSE_SESSION_SIGNING_KEY  = "/etc/concourse/session_signing_key"
+          CONCOURSE_TSA_HOST_KEY         = "/etc/concourse/host_key"
+          CONCOURSE_TSA_AUTHORIZED_KEYS  = "/etc/concourse/authorized_worker_keys"
+          CONCOURSE_EXTERNAL_URL         = "https://${local.fqdn}"
+          CONCOURSE_CLUSTER_NAME         = var.cluster_name
+          CONCOURSE_POSTGRES_HOST        = aws_rds_cluster.concourse.endpoint
+          CONCOURSE_POSTGRES_USER        = aws_rds_cluster.concourse.master_username
+          CONCOURSE_POSTGRES_PASSWORD    = aws_rds_cluster.concourse.master_password
+          CONCOURSE_POSTGRES_DATABASE    = aws_rds_cluster.concourse.database_name
+          CONCOURSE_ADD_LOCAL_USER       = "${data.aws_ssm_parameter.admin_user.value}:${data.aws_ssm_parameter.admin_password.value}"
+          CONCOURSE_MAIN_TEAM_LOCAL_USER = data.aws_ssm_parameter.admin_user.value
+        },
+        var.web.environment_override
       )
     }
   )
@@ -69,7 +69,7 @@ data "template_cloudinit_config" "web_bootstrap" {
 
   part {
     content_type = "text/cloud-config"
-    content = <<EOF
+    content      = <<EOF
 packages:
   - awscli
   - jq
@@ -79,7 +79,7 @@ EOF
   # Create concourse_worker systemd service file
   part {
     content_type = "text/cloud-config"
-    content = <<EOF
+    content      = <<EOF
 write_files:
 - encoding: b64
   content: ${base64encode(local.web_systemd_file)}
@@ -108,15 +108,15 @@ EOF
   # Bootstrap logger
   part {
     content_type = "text/x-shellscript"
-    content = local.logger_bootstrap_file
+    content      = local.logger_bootstrap_file
   }
 }
 
 resource "aws_security_group" "web" {
   vpc_id = var.vpc.aws_vpc.id
   tags = merge(
-  var.tags,
-  { Name = "web" }
+    var.tags,
+    { Name = "web" }
   )
   lifecycle {
     create_before_destroy = true
@@ -124,37 +124,37 @@ resource "aws_security_group" "web" {
 }
 
 resource "aws_security_group_rule" "web_elb_in" {
-  from_port = 8080
-  protocol = "tcp"
-  security_group_id = aws_security_group.web.id
-  to_port = 8080
-  type = "ingress"
+  from_port                = 8080
+  protocol                 = "tcp"
+  security_group_id        = aws_security_group.web.id
+  to_port                  = 8080
+  type                     = "ingress"
   source_security_group_id = aws_security_group.elb.id
 }
 
 resource "aws_security_group_rule" "tsa_elb_in" {
-  from_port = 2222
-  protocol = "tcp"
-  security_group_id = aws_security_group.web.id
-  to_port = 2222
-  type = "ingress"
+  from_port                = 2222
+  protocol                 = "tcp"
+  security_group_id        = aws_security_group.web.id
+  to_port                  = 2222
+  type                     = "ingress"
   source_security_group_id = aws_security_group.elb.id
 }
 
 resource "aws_security_group_rule" "tsa_peer_in" {
-  from_port = 2222
-  protocol = "tcp"
+  from_port         = 2222
+  protocol          = "tcp"
   security_group_id = aws_security_group.web.id
-  to_port = 2222
-  type = "ingress"
-  self = true
+  to_port           = 2222
+  type              = "ingress"
+  self              = true
 }
 
 resource "aws_security_group_rule" "web_all_out" {
-  from_port = 0
-  protocol = "all"
+  from_port         = 0
+  protocol          = "all"
   security_group_id = aws_security_group.web.id
-  to_port = 0
-  type = "egress"
-  cidr_blocks = ["0.0.0.0/0"]
+  to_port           = 0
+  type              = "egress"
+  cidr_blocks       = ["0.0.0.0/0"]
 }
